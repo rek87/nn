@@ -6,26 +6,32 @@ using namespace std;
 
 int main(void) 
 {
-	std::vector<Neuron<2>> network(3);
+  std::vector<Neuron> in_stage(4, Neuron(1)); //Input stage
+	std::vector<Neuron> network(4, Neuron(4)); // Hidden stage
+	Neuron out_stage(4);
+
 	SendingPort input;
 	OutputValue res;
 
 	// Build the network
-	inputs[0].link(&network[0].in[0]);
-	inputs[0].link(&network[0].in[1]);
-	inputs[1].link(&network[1].in[0]);
-	inputs[1].link(&network[1].in[1]);
+	// Link input stage
+	for (unsigned i = 0; i < in_stage.size(); ++i)
+	  input.link(&in_stage[i].in[0]);
 
-	network[0].out.link(&network[2].in[0]);
-	network[1].out.link(&network[2].in[1]);
+	// Fully link hidden stage
+	for (unsigned i = 0; i < in_stage.size(); ++i)
+	  for (unsigned j = 0; j < network.size(); ++j)
+	    in_stage[i].out.link(&network[j].in[i]);
 
-	network[2].out.link(&res);
+	// Link output stage
+	for (unsigned i = 0; i < network.size(); ++i)
+	  network[i].out.link(&out_stage.in[i]);
+	out_stage.out.link(&res);
 
 	// Do a forward iteration
-	std::vector<unsigned> in_v = {
-	for (unsigned i = 0; i < inputs.size(); ++i) {
-
-	}
+	input.send(3);
+	if (res.ready)
+	  cout << "Value: " << res.v << endl;
 
   return 0;
 }

@@ -1,7 +1,10 @@
 #ifndef NEURON_H
 #define NEURON_H
 
+#include <stdio.h>
+
 #include <include/helper.h>
+
 
 struct Neuron;
 
@@ -29,19 +32,19 @@ struct OutputValue: public ReceivingPort {
 
 struct SendingPort {
 	void send(unsigned o);
-	void link(InputPort *p);
+	void link(ReceivingPort *p);
 
-	SendingPort *prev;
-	SendingPort *next;
-	LinkedItem<InputPort, &InputPort::prev, &InputPort::next> links_;
+	LinkedItem<ReceivingPort, &ReceivingPort::prev, &ReceivingPort::next> links_;
 };
 
 
-template<int N>
 struct Neuron {
-	InputPort in[N];
+  public:
+  Neuron(unsigned n);
+
+	InputPort *in;
 	SendingPort out;
-	unsigned weights[N];
+	unsigned *weights;
 
 	unsigned partial_sum;
 	unsigned missing; // Missing inputs to calculate output
